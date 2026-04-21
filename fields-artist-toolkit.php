@@ -504,3 +504,53 @@ function save_work_meta($post_id) {
     }
 }
 add_action('save_post_work', 'Nonarchival\FieldsToolkit\save_work_meta');
+
+// Year and Medium columns for Work list
+function add_work_columns($columns) {
+    $new = array();
+    foreach ($columns as $key => $value) {
+        $new[$key] = $value;
+        if ($key === 'title') {
+            $new['work_year']   = __('Year', 'nonarchival');
+            $new['work_medium'] = __('Medium', 'nonarchival');
+        }
+    }
+    return $new;
+}
+add_filter('manage_work_posts_columns', 'Nonarchival\FieldsToolkit\add_work_columns');
+
+// Populate Year and Medium columns
+function populate_work_columns($column, $post_id) {
+    switch ($column) {
+        case 'work_year':
+            $year = get_post_meta($post_id, 'work_year', true);
+            echo $year ? esc_html($year) : '—';
+            break;
+        case 'work_medium':
+            $terms = get_the_terms($post_id, 'medium');
+            if ($terms && !is_wp_error($terms)) {
+                echo esc_html(implode(', ', wp_list_pluck($terms, 'name')));
+            } else {
+                echo '—';
+            }
+            break;
+    }
+}
+add_action('manage_work_posts_custom_column', 'Nonarchival\FieldsToolkit\populate_work_columns', 10, 2);
+
+// Make Year column sortable
+function make_work_columns_sortable($columns) {
+    $columns['work_year'] = 'work_year';
+    return $columns;
+}
+add_filter('manage_edit-work_sortable_columns', 'Nonarchival\FieldsToolkit\make_work_columns_sortable');
+
+// Sort by work_year meta when orderby is set
+function sort_work_by_year($query) {
+    if (!is_admin() || !$query->is_main_query()) return;
+    if ($query->get('orderby') === 'work_year') {
+        $query->set('meta_key', 'work_year');
+        $query->set('orderby', 'meta_value');
+    }
+}
+add_action('pre_get_posts', 'Nonarchival\FieldsToolkit\sort_work_by_year');
