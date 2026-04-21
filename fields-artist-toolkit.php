@@ -183,12 +183,6 @@ function activate() {
 }
 register_activation_hook(__FILE__, 'Nonarchival\FieldsToolkit\activate');
 
-// Flush rewrite rules on deactivation
-function deactivate() {
-    flush_rewrite_rules();
-}
-register_deactivation_hook(__FILE__, 'Nonarchival\FieldsToolkit\deactivate');
-
 // Register Technique Taxonomy
 function register_taxonomy_technique() {
     $labels = array(
@@ -588,3 +582,21 @@ function register_taxonomy_client() {
     register_taxonomy('client', 'work', $args);
 }
 add_action('init', 'Nonarchival\FieldsToolkit\register_taxonomy_client');
+
+// Relabel 'Excerpt' to 'Project Description' for the work post type
+function relabel_excerpt($translated, $original, $context, $domain) {
+    if (get_post_type() !== 'work') return $translated;
+    $map = array(
+        'Excerpt'                                                => 'Project Description',
+        'Write an excerpt (optional)'                           => 'Write a short project description',
+        'Excerpts are optional hand-crafted summaries of your content that can be used in your theme. <a href="%s">Learn more about manual excerpts</a>.' => 'A short description of this work, used in listings and archive pages.',
+    );
+    return $map[$original] ?? $translated;
+}
+add_filter('gettext_with_context', 'Nonarchival\FieldsToolkit\relabel_excerpt', 10, 4);
+
+// Flush rewrite rules on deactivation
+function deactivate() {
+    flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'Nonarchival\FieldsToolkit\deactivate');
