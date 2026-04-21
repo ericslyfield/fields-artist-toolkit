@@ -554,3 +554,31 @@ function sort_work_by_year($query) {
     }
 }
 add_action('pre_get_posts', 'Nonarchival\FieldsToolkit\sort_work_by_year');
+
+// Register Client Taxonomy
+function register_taxonomy_client() {
+    $labels = array(
+        'name'              => __('Clients', 'nonarchival'),
+        'singular_name'     => __('Client', 'nonarchival'),
+        'search_items'      => __('Search Clients', 'nonarchival'),
+        'all_items'         => __('All Clients', 'nonarchival'),
+        'edit_item'         => __('Edit Client', 'nonarchival'),
+        'update_item'       => __('Update Client', 'nonarchival'),
+        'add_new_item'      => __('Add New Client', 'nonarchival'),
+        'new_item_name'     => __('New Client Name', 'nonarchival'),
+        'menu_name'         => __('Clients', 'nonarchival'),
+    );
+
+    $args = array(
+        'hierarchical'      => false,
+        'labels'            => $labels,
+        'show_ui'           => true,
+        'show_admin_column' => false,
+        'show_in_rest'      => true,
+        'query_var'         => true,
+        'rewrite'           => array('slug' => 'work/client'),
+    );
+
+    register_taxonomy('client', 'work', $args);
+}
+add_action('init', 'Nonarchival\FieldsToolkit\register_taxonomy_client');
