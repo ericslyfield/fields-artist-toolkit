@@ -142,7 +142,7 @@ function register_taxonomy_medium() {
         'hierarchical'      => false,
         'labels'            => $labels,
         'show_ui'           => true,
-        'show_admin_column' => true,
+        'show_admin_column' => false,
         'show_in_rest'      => true,
         'query_var'         => true,
         'rewrite'           => array('slug' => 'work/medium'),
