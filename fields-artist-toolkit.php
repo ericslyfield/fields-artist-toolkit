@@ -183,6 +183,12 @@ function activate() {
 }
 register_activation_hook(__FILE__, 'Nonarchival\FieldsToolkit\activate');
 
+// Flush rewrite rules on deactivation
+function deactivate() {
+    flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'Nonarchival\FieldsToolkit\deactivate');
+
 // Register Technique Taxonomy
 function register_taxonomy_technique() {
     $labels = array(
